@@ -11,10 +11,14 @@ class ChartTool {
         const fileInput = document.getElementById('fileInput');
         const applyFilter = document.getElementById('applyFilter');
         const resetFilter = document.getElementById('resetFilter');
+        const fetchDataBtn = document.getElementById('fetchDataBtn');
 
         // File upload events
         uploadArea.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+
+        // Fetch latest data button
+        fetchDataBtn.addEventListener('click', () => this.fetchLatestData());
 
         // Drag and drop events
         uploadArea.addEventListener('dragover', (e) => {
@@ -58,7 +62,7 @@ class ChartTool {
 
         try {
             this.showStatus('Uploading and processing file...', 'info');
-            
+
             const response = await fetch('/upload', {
                 method: 'POST',
                 body: formData
@@ -108,14 +112,14 @@ class ChartTool {
 
         document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
         document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
-        
+
         // 初期表示時にフィルターを適用
         this.applyDateFilter();
     }
 
     extractDates(data) {
         const dates = [];
-        
+
         // Handle different ccusage output formats
         if (Array.isArray(data)) {
             data.forEach(item => {
@@ -152,7 +156,7 @@ class ChartTool {
         if (!this.currentData) return;
 
         const chartData = this.prepareChartData(this.currentData);
-        
+
         if (chartData.labels.length === 0) {
             this.showStatus('No valid data found for charting', 'error');
             return;
@@ -162,7 +166,7 @@ class ChartTool {
         this.updateSummaryStats(chartData.data);
 
         const ctx = document.getElementById('usageChart').getContext('2d');
-        
+
         if (this.chart) {
             this.chart.destroy();
         }
@@ -201,8 +205,8 @@ class ChartTool {
                                     label += ': ';
                                 }
                                 if (context.parsed.y !== null) {
-                                    label += new Intl.NumberFormat('en-US', { 
-                                        style: 'currency', 
+                                    label += new Intl.NumberFormat('en-US', {
+                                        style: 'currency',
                                         currency: 'USD',
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2
@@ -279,7 +283,7 @@ class ChartTool {
                     dailyData[date] += session.totalCost;
                 }
             });
-            
+
             Object.keys(dailyData).sort().forEach(date => {
                 labels.push(new Date(date).toLocaleDateString());
                 values.push(dailyData[date]);
@@ -353,15 +357,15 @@ class ChartTool {
         const total = data.reduce((sum, value) => sum + value, 0);
         const average = data.length > 0 ? total / data.length : 0;
 
-        document.getElementById('periodTotal').textContent = new Intl.NumberFormat('en-US', { 
-            style: 'currency', 
+        document.getElementById('periodTotal').textContent = new Intl.NumberFormat('en-US', {
+            style: 'currency',
             currency: 'USD',
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }).format(total);
 
-        document.getElementById('dailyAverage').textContent = new Intl.NumberFormat('en-US', { 
-            style: 'currency', 
+        document.getElementById('dailyAverage').textContent = new Intl.NumberFormat('en-US', {
+            style: 'currency',
             currency: 'USD',
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
@@ -377,6 +381,39 @@ class ChartTool {
         setTimeout(() => {
             statusElement.style.display = 'none';
         }, 5000);
+    }
+
+    async fetchLatestData() {
+        const fetchBtn = document.getElementById('fetchDataBtn');
+        const fetchBtnText = document.getElementById('fetchBtnText');
+        const fetchBtnSpinner = document.getElementById('fetchBtnSpinner');
+
+        try {
+            // Show loading state
+            fetchBtn.disabled = true;
+            fetchBtnText.textContent = 'Fetching...';
+            fetchBtnSpinner.classList.remove('hidden');
+            this.showStatus('Fetching latest ccusage data...', 'info');
+
+            const response = await fetch('/api/fetch-ccusage');
+            const result = await response.json();
+
+            if (result.success) {
+                this.originalData = result.data;
+                this.currentData = result.data;
+                this.showStatus('Latest data fetched successfully!', 'success');
+                this.processData();
+            } else {
+                this.showStatus(result.error || 'Failed to fetch data', 'error');
+            }
+        } catch (error) {
+            this.showStatus('Error fetching data: ' + error.message, 'error');
+        } finally {
+            // Reset button state
+            fetchBtn.disabled = false;
+            fetchBtnText.textContent = 'Fetch ccusage';
+            fetchBtnSpinner.classList.add('hidden');
+        }
     }
 }
 
