@@ -1,6 +1,6 @@
 {
-  "name": "ccusage-chart-tool",
-  "version": "1.0.0",
+  "name": "ccchart",
+  "version": "0.1.0",
   "description": "Interactive chart tool for ccusage JSON output",
   "main": "server.js",
   "scripts": {
