@@ -34,7 +34,7 @@ npm start
 
 2. ブラウザで http://localhost:3000 にアクセス
 
-3. ccusage --json で出力されたJSONファイルをアップロード
+3. ccusage --json で出力されたJSONファイルをアップロード or [Fetch ccusage]ボタンで最新のccusageを取得
 
 4. チャートが表示されたら、日付範囲を選択してフィルタリング可能
 
@@ -42,27 +42,8 @@ npm start
 
 ```bash
 # 日次レポートをJSON形式で出力
-npx ccusage@latest --since 20250707 daily --json > data/daily_usage.json
-
-# 月次レポートをJSON形式で出力
-ccusage monthly --json > monthly_usage.json
-
-# セッションレポートをJSON形式で出力
-ccusage session --json > session_usage.json
+npx ccusage@latest daily --json > daily_usage.json
 ```
-
-## 開発モード
-
-```bash
-# 開発サーバーを起動（ファイル変更時に自動リロード）
-npm run dev
-```
-
-## 対応データ形式
-
-- ccusage daily --json出力
-- ccusage monthly --json出力
-- ccusage session --json出力
 
 ## 技術スタック
 
@@ -70,20 +51,6 @@ npm run dev
 - **フロントエンド**: HTML, CSS, JavaScript
 - **チャート**: Chart.js
 - **ファイルアップロード**: multer
-
-## トラブルシューティング
-
-### JSONファイルが読み込めない
-- ファイルが正しいccusage --json出力形式であることを確認
-- ファイルサイズが大きすぎないか確認
-
-### チャートが表示されない
-- ブラウザのコンソールでエラーメッセージを確認
-- JSONデータに必要なフィールド（date, tokens等）が含まれているか確認
-
-### サーバーが起動しない
-- ポート3000が使用中でないか確認
-- Node.jsのバージョンが対応しているか確認
 
 ## ライセンス
 
