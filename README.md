@@ -2,6 +2,8 @@
 
 ccusageツールから出力されるJSONデータを読み込み、Web上でインタラクティブなチャートとして可視化するツールです。
 
+<img width="562" alt="image" src="https://github.com/user-attachments/assets/2bccb4f4-fdb9-470f-9eac-cd752ffb0d2a" />
+
 ## 機能
 
 - ccusage --json出力の読み込み
